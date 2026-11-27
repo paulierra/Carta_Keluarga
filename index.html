@@ -28,12 +28,30 @@
 
     <div id="editPanel" class="edit-panel hidden">
       <p class="hint">
-        Anak: <b>Ali bin Ahmad</b> &bull; Pasangan: <b>Aminah binti Kassim + Ali</b> &bull; Tekan <b>Enter</b> untuk tambah
+        Anak: <b>Ali bin Ahmad</b> &bull; Pasangan: <b>Aminah binti Kassim + Ali</b> &bull; <b>Enter</b> = tambah
       </p>
 
       <div class="controls">
-        <input type="text" id="fullName" placeholder="Taip nama & hubungan..." />
+        <input type="text" id="fullName" placeholder="Taip nama &amp; hubungan..." />
         <button id="addBtn" type="button">Tambah</button>
+      </div>
+
+      <div class="controls">
+        <select id="fatherRoleSelect">
+          <option value="">-- Ayah Utama --</option>
+        </select>
+        <select id="motherRoleSelect">
+          <option value="">-- Ibu Utama --</option>
+        </select>
+        <button id="saveRolesBtn" type="button" class="secondary-btn">Set</button>
+      </div>
+
+      <div class="controls">
+        <select id="editSelect">
+          <option value="">-- Ahli untuk diedit --</option>
+        </select>
+        <input type="text" id="editNameInput" placeholder="Nama baharu" />
+        <button id="saveEditBtn" type="button">Simpan</button>
       </div>
 
       <div class="controls">
