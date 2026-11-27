@@ -16,7 +16,7 @@ body {
 }
 
 .app-header {
-  max-width: 640px;
+  max-width: 600px;
   margin: 0 auto 14px auto;
   background-color: #2c3038;
   padding: 12px 14px;
@@ -48,7 +48,7 @@ h2 {
   display: flex;
   gap: 6px;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .tab-btn {
@@ -68,17 +68,17 @@ h2 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .edit-panel {
   border-top: 1px solid #3c414b;
-  padding-top: 10px;
-  margin-top: 6px;
+  padding-top: 8px;
+  margin-top: 8px;
 }
 
 .hint {
-  margin: 0 0 8px 0;
+  margin: 0 0 7px 0;
   font-size: 11.5px;
   color: #a9b0bc;
 }
@@ -88,12 +88,12 @@ h2 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 input, select {
   padding: 6px 9px;
-  width: 215px;
+  width: 175px;
   border-radius: 6px;
   border: 1px solid #4a505c;
   background-color: #1c1f24;
@@ -226,6 +226,7 @@ button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0;
 }
 
 .person-card {
@@ -235,10 +236,14 @@ button:hover {
   color: #f3f4f6;
   border-radius: 8px;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  min-width: 90px;
+  justify-content: center;
+  min-width: 88px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.person-card.editable-card {
+  cursor: pointer;
 }
 
 .person-card.spouse-card {
@@ -256,12 +261,6 @@ button:hover {
 .person-name {
   font-weight: 700;
   font-size: 13px;
-}
-
-.person-parent {
-  font-size: 11px;
-  color: #b4bac4;
-  margin-top: 2px;
 }
 
 .couple-link {
@@ -299,9 +298,5 @@ button:hover {
     border-color: #333333;
     box-shadow: none;
     transform: none;
-  }
-
-  .person-parent {
-    color: #444444;
   }
 }
