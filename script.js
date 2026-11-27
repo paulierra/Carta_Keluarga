@@ -3,13 +3,14 @@ const STORAGE_KEY = "carta_keluarga_data_v1";
 let state = {
   activeTab: "father", // "father" atau "mother"
   isEditing: false,
+  searchQuery: "",
   trees: {
     father: null,
     mother: null
   }
 };
 
-// Hook simpanan: simpan ke localStorage + sedia untuk cloud (Firebase/Supabase)
+// Simpan ke localStorage + hook cloud (Firebase / Supabase)
 async function persistData() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.trees));
@@ -20,13 +21,73 @@ async function persistData() {
 }
 
 async function saveToCloud(treesData) {
-  // Tempat sambungan Firebase / Supabase nanti
   return Promise.resolve(treesData);
 }
 
 async function loadFromCloud() {
-  // Tempat ambil data dari Firebase / Supabase nanti
   return null;
+}
+
+function cloneNode(node) {
+  if (!node) return null;
+  return {
+    name: node.name,
+    relation: node.relation || "",
+    father: node.father || "",
+    spouse: node.spouse ? { ...node.spouse } : null,
+    children: Array.isArray(node.children) ? node.children.map(cloneNode) : []
+  };
+}
+
+// Cari nod pasangan/ibu dalam pokok ayah untuk disegerakkan ke tab Keluarga Ibu
+function findMotherSeed(node, husbandName) {
+  if (!node) return null;
+
+  if (node.spouse && node.spouse.name) {
+    if (!husbandName || node.name.toLowerCase() === husbandName.toLowerCase()) {
+      return {
+        name: node.spouse.name,
+        relation: node.spouse.relation || "binti",
+        father: node.spouse.father || "",
+        spouse: {
+          name: node.name,
+          relation: node.relation || "bin",
+          father: node.father || ""
+        },
+        children: Array.isArray(node.children) ? node.children.map(cloneNode) : []
+      };
+    }
+  }
+
+  for (let child of node.children || []) {
+    const found = findMotherSeed(child, husbandName);
+    if (found) return found;
+  }
+  return null;
+}
+
+// Pastikan tab Keluarga Ibu mempunyai rujukan pasangan/ibu & anak daripada tab Keluarga Ayah
+function syncMotherTreeFromFather(preferredHusband = "") {
+  if (!state.trees.father) return;
+
+  const seed = findMotherSeed(state.trees.father, preferredHusband);
+  if (!seed) return;
+
+  if (!state.trees.mother) {
+    state.trees.mother = seed;
+    return;
+  }
+
+  // Jika tab Ibu sudah ada leluhur di atas, sambungkan cabang ibu & anak di bawahnya jika belum ada
+  const existingMother = findNode(state.trees.mother, seed.name);
+  if (existingMother) {
+    if (!existingMother.spouse && seed.spouse) {
+      existingMother.spouse = seed.spouse;
+    }
+    if (existingMother.children.length === 0 && seed.children.length > 0) {
+      existingMother.children = seed.children;
+    }
+  }
 }
 
 async function initData() {
@@ -55,7 +116,6 @@ function setCurrentTree(newTree) {
   state.trees[state.activeTab] = newTree;
 }
 
-// Pecahkan "Nama bin/binti Ayah" -> { name, relation, father }
 function splitPersonAndFather(text) {
   const clean = text.trim();
   const match = clean.match(/^(.+?)\s+(bin|binti)\s+(.+)$/i);
@@ -161,11 +221,21 @@ function updateDeleteDropdown() {
   });
 }
 
+function isSearchMatch(person) {
+  const q = state.searchQuery.trim().toLowerCase();
+  if (!q || !person) return false;
+  return (
+    (person.name && person.name.toLowerCase().includes(q)) ||
+    (person.father && person.father.toLowerCase().includes(q))
+  );
+}
+
 function renderPersonCard(person, isSpouse = false) {
   const parentText = formatParentLabel(person);
   const extraClass = isSpouse ? " spouse-card" : "";
+  const matchClass = isSearchMatch(person) ? " search-match" : "";
   return `
-    <div class="person-card${extraClass}">
+    <div class="person-card${extraClass}${matchClass}">
       <span class="person-name">${person.name}</span>
       ${parentText ? `<span class="person-parent">${parentText}</span>` : ""}
     </div>
@@ -191,6 +261,14 @@ function buildHTML(node) {
   return html;
 }
 
+function scrollToFirstMatch() {
+  if (!state.searchQuery.trim()) return;
+  const firstMatch = document.querySelector(".person-card.search-match");
+  if (firstMatch) {
+    firstMatch.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  }
+}
+
 function renderTree() {
   const treeContainer = document.getElementById("tree");
   const currentTree = getCurrentTree();
@@ -200,6 +278,7 @@ function renderTree() {
     treeContainer.innerHTML = `<ul>${buildHTML(currentTree)}</ul>`;
   }
   updateDeleteDropdown();
+  scrollToFirstMatch();
 }
 
 function syncUI() {
@@ -217,35 +296,8 @@ function syncUI() {
   renderTree();
 }
 
-// Butang Edit / Selesai Edit
-document.getElementById("toggleEditBtn").addEventListener("click", () => {
-  state.isEditing = !state.isEditing;
-  document.getElementById("statusMsg").textContent = state.isEditing
-    ? "Mod Edit aktif: anda boleh tambah atau padam ahli."
-    : "Mod Lihat aktif.";
-  syncUI();
-});
-
-// Butang Print / Save PDF
-document.getElementById("printBtn").addEventListener("click", () => {
-  window.print();
-});
-
-// Tab Keluarga Ayah & Keluarga Ibu
-document.getElementById("tabFather").addEventListener("click", () => {
-  state.activeTab = "father";
-  document.getElementById("statusMsg").textContent = "Memaparkan Carta Keluarga Ayah.";
-  syncUI();
-});
-
-document.getElementById("tabMother").addEventListener("click", () => {
-  state.activeTab = "mother";
-  document.getElementById("statusMsg").textContent = "Memaparkan Carta Keluarga Ibu.";
-  syncUI();
-});
-
-// Butang Tambah
-document.getElementById("addBtn").addEventListener("click", async () => {
+// Logik utama menambah nama (dipakai oleh butang Tambah & kekunci Enter)
+async function handleAddMember() {
   if (!state.isEditing) return;
 
   const inputEl = document.getElementById("fullName");
@@ -256,6 +308,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
   let currentTree = getCurrentTree();
   const spouseData = parseSpouse(rawText);
   const childData = parseChild(rawText);
+  let syncedHusband = "";
 
   if (spouseData) {
     const p1 = spouseData.first;
@@ -269,6 +322,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
         spouse: { name: p2.name, relation: p2.relation, father: p2.father },
         children: []
       };
+      syncedHusband = p1.name;
       statusEl.textContent = `Pasangan ${p1.name} & ${p2.name} ditambah!`;
     } else {
       const node1 = findNode(currentTree, p1.name);
@@ -280,6 +334,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
           node1.relation = p1.relation;
         }
         node1.spouse = { name: p2.name, relation: p2.relation, father: p2.father };
+        syncedHusband = node1.name;
         statusEl.textContent = `${p2.name} ditetapkan sebagai pasangan ${node1.name}.`;
       } else if (node2) {
         if (p2.father) {
@@ -287,6 +342,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
           node2.relation = p2.relation;
         }
         node2.spouse = { name: p1.name, relation: p1.relation, father: p1.father };
+        syncedHusband = node2.name;
         statusEl.textContent = `${p1.name} ditetapkan sebagai pasangan ${node2.name}.`;
       } else {
         statusEl.textContent = `Tiada nama "${p1.name}" atau "${p2.name}" dalam tab ini.`;
@@ -295,6 +351,9 @@ document.getElementById("addBtn").addEventListener("click", async () => {
     }
 
     setCurrentTree(currentTree);
+    if (state.activeTab === "father") {
+      syncMotherTreeFromFather(syncedHusband);
+    }
     await persistData();
     inputEl.value = "";
     renderTree();
@@ -361,6 +420,9 @@ document.getElementById("addBtn").addEventListener("click", async () => {
     }
 
     setCurrentTree(currentTree);
+    if (state.activeTab === "father") {
+      syncMotherTreeFromFather();
+    }
     await persistData();
     inputEl.value = "";
     renderTree();
@@ -368,6 +430,56 @@ document.getElementById("addBtn").addEventListener("click", async () => {
   }
 
   statusEl.textContent = "Gunakan format 'Nama bin/binti Ayah' atau 'Nama1 + Nama2'.";
+}
+
+// Butang Edit / Selesai Edit
+document.getElementById("toggleEditBtn").addEventListener("click", () => {
+  state.isEditing = !state.isEditing;
+  document.getElementById("statusMsg").textContent = state.isEditing
+    ? "Mod Edit aktif: anda boleh tambah atau padam ahli."
+    : "Mod Lihat aktif.";
+  syncUI();
+});
+
+// Butang Print / Save PDF
+document.getElementById("printBtn").addEventListener("click", () => {
+  window.print();
+});
+
+// Tab Keluarga Ayah & Keluarga Ibu
+document.getElementById("tabFather").addEventListener("click", () => {
+  state.activeTab = "father";
+  document.getElementById("statusMsg").textContent = "Memaparkan Carta Keluarga Ayah.";
+  syncUI();
+});
+
+document.getElementById("tabMother").addEventListener("click", () => {
+  state.activeTab = "mother";
+  syncMotherTreeFromFather();
+  document.getElementById("statusMsg").textContent = "Memaparkan Carta Keluarga Ibu.";
+  syncUI();
+});
+
+// Carian nama
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  state.searchQuery = e.target.value;
+  renderTree();
+});
+
+document.getElementById("clearSearchBtn").addEventListener("click", () => {
+  state.searchQuery = "";
+  document.getElementById("searchInput").value = "";
+  document.getElementById("statusMsg").textContent = "Carian dikosongkan.";
+  renderTree();
+});
+
+// Butang Tambah & kekunci Enter
+document.getElementById("addBtn").addEventListener("click", handleAddMember);
+document.getElementById("fullName").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handleAddMember();
+  }
 });
 
 // Butang Padam
