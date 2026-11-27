@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carta Salasilah Keluarga</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-header">
+    <div class="top-bar">
+      <h2>Carta Salasilah Keluarga</h2>
+      <div class="top-actions">
+        <button id="toggleEditBtn" type="button">Edit</button>
+        <button id="printBtn" type="button" class="secondary-btn">Print / PDF</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button id="tabFather" type="button" class="tab-btn active">Keluarga Ayah</button>
+      <button id="tabMother" type="button" class="tab-btn">Keluarga Ibu</button>
+    </div>
+
+    <div id="editPanel" class="edit-panel hidden">
+      <p class="hint">
+        Anak: <b>Ali bin Ahmad</b> &bull; Pasangan: <b>Aminah binti Kassim + Ali</b>
+      </p>
+
+      <div class="controls">
+        <input type="text" id="fullName" placeholder="Taip nama & hubungan..." />
+        <button id="addBtn" type="button">Tambah</button>
+      </div>
+
+      <div class="controls">
+        <select id="deleteSelect">
+          <option value="">-- Pilih nama untuk dipadam --</option>
+        </select>
+        <button id="deleteBtn" type="button" class="danger-btn">Padam</button>
+      </div>
+    </div>
+
+    <p id="statusMsg">Mod Lihat aktif (tekan "Edit" untuk mengubah carta).</p>
+  </div>
+
+  <div class="tree-wrapper">
+    <div class="tree" id="tree"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
