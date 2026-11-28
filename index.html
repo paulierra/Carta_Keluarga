@@ -11,14 +11,9 @@
     <div class="top-bar">
       <h2>Carta Salasilah Keluarga</h2>
       <div class="top-actions">
-        <button id="toggleEditBtn" type="button">Edit</button>
+        <button id="toggleEditBtn" type="button">Buka Panel Edit</button>
         <button id="printBtn" type="button" class="secondary-btn">Print / PDF</button>
       </div>
-    </div>
-
-    <div class="tabs">
-      <button id="tabFather" type="button" class="tab-btn active">Keluarga Ayah</button>
-      <button id="tabMother" type="button" class="tab-btn">Keluarga Ibu</button>
     </div>
 
     <div class="search-row">
@@ -28,41 +23,22 @@
 
     <div id="editPanel" class="edit-panel hidden">
       <p class="hint">
-        Anak: <b>Ali bin Ahmad</b> &bull; Pasangan: <b>Aminah binti Kassim + Ali</b> &bull; <b>Enter</b> = tambah
+        Taip satu nama atau pasangan (<b>Hamat + Zimah</b>) setiap baris. Tekan <b>Tab</b> (atau beri jarak depan) untuk jadikan baris itu sebagai <b>anak</b> di bawah baris di atasnya.
       </p>
 
-      <div class="controls">
-        <input type="text" id="fullName" placeholder="Taip nama &amp; hubungan..." />
-        <button id="addBtn" type="button">Tambah</button>
-      </div>
+      <textarea
+        id="smartArtInput"
+        rows="10"
+        placeholder="Contoh:&#10;Hamat + Zimah&#10;  Maimun&#10;    Sukeri&#10;    Lutfi + Huda&#10;      Rayyan&#10;      Fayyadh&#10;  C.Ja"
+      ></textarea>
 
       <div class="controls">
-        <select id="fatherRoleSelect">
-          <option value="">-- Ayah Utama --</option>
-        </select>
-        <select id="motherRoleSelect">
-          <option value="">-- Ibu Utama --</option>
-        </select>
-        <button id="saveRolesBtn" type="button" class="secondary-btn">Set</button>
-      </div>
-
-      <div class="controls">
-        <select id="editSelect">
-          <option value="">-- Ahli untuk diedit --</option>
-        </select>
-        <input type="text" id="editNameInput" placeholder="Nama baharu" />
-        <button id="saveEditBtn" type="button">Simpan</button>
-      </div>
-
-      <div class="controls">
-        <select id="deleteSelect">
-          <option value="">-- Pilih nama untuk dipadam --</option>
-        </select>
-        <button id="deleteBtn" type="button" class="danger-btn">Padam</button>
+        <button id="applyTreeBtn" type="button">Kemas Kini Carta</button>
+        <button id="closeEditBtn" type="button" class="secondary-btn">Tutup Panel</button>
       </div>
     </div>
 
-    <p id="statusMsg">Mod Lihat aktif (tekan "Edit" untuk mengubah carta).</p>
+    <p id="statusMsg">Panel edit ditutup. Tekan "Buka Panel Edit" untuk menyusun senarai.</p>
   </div>
 
   <div class="tree-wrapper">
