@@ -1,5 +1,25 @@
 const STORAGE_KEY = "carta_keluarga_smartart_v1";
 
+const DEFAULT_SMARTART_TEXT = `# Keluarga Ayah
+  Ghafur
+    Saleh
+      Loman
+        Abdullah + Maimun
+          Sukeri
+          Lutfi + Huda
+            Rayyan
+            Fayyadh
+          Zaki + Kak Nor
+
+# Keluarga Ibu
+  Hamat + Zimah
+    Maimun + Abdullah
+      Sukeri
+      Lutfi + Huda
+        Rayyan
+        Fayyadh
+      Zaki + Kak Nor`;
+
 let state = {
   isEditing: false,
   searchQuery: "",
@@ -91,7 +111,11 @@ function saveLocal() {
 function loadLocal() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return;
+    if (!saved) {
+      state.rawText = DEFAULT_SMARTART_TEXT;
+      state.roots = parseSmartArtText(DEFAULT_SMARTART_TEXT);
+      return;
+    }
     const parsed = JSON.parse(saved);
     if (typeof parsed.rawText === "string") {
       state.rawText = parsed.rawText;
@@ -102,6 +126,8 @@ function loadLocal() {
     }
   } catch (e) {
     console.warn("Gagal baca data localStorage:", e);
+    state.rawText = DEFAULT_SMARTART_TEXT;
+    state.roots = parseSmartArtText(DEFAULT_SMARTART_TEXT);
   }
 }
 
