@@ -16,8 +16,8 @@ body {
 }
 
 .app-header {
-  max-width: 600px;
-  margin: 0 auto 14px auto;
+  max-width: 620px;
+  margin: 0 auto 16px auto;
   background-color: #2c3038;
   padding: 12px 14px;
   border-radius: 10px;
@@ -44,25 +44,6 @@ h2 {
   gap: 6px;
 }
 
-.tabs {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-.tab-btn {
-  background-color: #1e2126;
-  color: #b4bac4;
-  border: 1px solid #434954;
-}
-
-.tab-btn.active {
-  background-color: #3d7a74;
-  color: #ffffff;
-  border-color: #3d7a74;
-}
-
 .search-row {
   display: flex;
   flex-wrap: wrap;
@@ -73,27 +54,50 @@ h2 {
 
 .edit-panel {
   border-top: 1px solid #3c414b;
-  padding-top: 8px;
+  padding-top: 10px;
   margin-top: 8px;
+  text-align: left;
 }
 
 .hint {
-  margin: 0 0 7px 0;
-  font-size: 11.5px;
-  color: #a9b0bc;
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #b4bac4;
+  line-height: 1.45;
+  text-align: center;
+}
+
+#smartArtInput {
+  width: 100%;
+  min-height: 190px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #4a505c;
+  background-color: #191c20;
+  color: #f3f4f6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  margin-bottom: 8px;
+  tab-size: 2;
+}
+
+#smartArtInput:focus {
+  outline: none;
+  border-color: #5ea39b;
 }
 
 .controls {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
 }
 
-input, select {
+input {
   padding: 6px 9px;
-  width: 175px;
+  width: 195px;
   border-radius: 6px;
   border: 1px solid #4a505c;
   background-color: #1c1f24;
@@ -105,13 +109,13 @@ input::placeholder {
   color: #8b929e;
 }
 
-input:focus, select:focus {
+input:focus {
   outline: none;
   border-color: #5ea39b;
 }
 
 button {
-  padding: 6px 11px;
+  padding: 6px 12px;
   border-radius: 6px;
   border: none;
   background-color: #3d7a74;
@@ -133,16 +137,8 @@ button:hover {
   background-color: #596374;
 }
 
-.danger-btn {
-  background-color: #b8544c;
-}
-
-.danger-btn:hover {
-  background-color: #cf6259;
-}
-
 #statusMsg {
-  margin: 6px 0 0 0;
+  margin: 8px 0 0 0;
   color: #79c2ba;
   font-size: 12px;
   min-height: 16px;
@@ -151,7 +147,7 @@ button:hover {
 .tree-wrapper {
   width: 100%;
   overflow-x: auto;
-  padding-bottom: 20px;
+  padding-bottom: 24px;
 }
 
 .tree {
@@ -160,7 +156,7 @@ button:hover {
 }
 
 .tree ul {
-  padding-top: 20px;
+  padding-top: 22px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -172,7 +168,7 @@ button:hover {
 .tree li {
   text-align: center;
   position: relative;
-  padding: 20px 10px 0 10px;
+  padding: 22px 12px 0 12px;
 }
 
 .tree li::before, .tree li::after {
@@ -182,7 +178,7 @@ button:hover {
   right: 50%;
   border-top: 2px solid #676e7a;
   width: 50%;
-  height: 20px;
+  height: 22px;
 }
 
 .tree li::after {
@@ -219,7 +215,7 @@ button:hover {
   left: 50%;
   border-left: 2px solid #676e7a;
   width: 0;
-  height: 20px;
+  height: 22px;
 }
 
 .couple {
@@ -231,19 +227,16 @@ button:hover {
 
 .person-card {
   border: 1.5px solid #5ea39b;
-  padding: 7px 12px;
+  padding: 7px 13px;
   background-color: #2c3038;
   color: #f3f4f6;
   border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 88px;
+  min-width: 84px;
+  white-space: nowrap;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.person-card.editable-card {
-  cursor: pointer;
 }
 
 .person-card.spouse-card {
@@ -284,7 +277,7 @@ button:hover {
     padding: 0;
   }
 
-  .top-actions, .tabs, .search-row, .edit-panel, #statusMsg {
+  .top-actions, .search-row, .edit-panel, #statusMsg {
     display: none !important;
   }
 
